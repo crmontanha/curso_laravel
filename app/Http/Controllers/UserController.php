@@ -8,17 +8,19 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+    protected $model;
+
+    public function __construct(User $user)
+    {
+        $this->model = $user;
+    }
+
     public function index(Request $request)
     {
-        $search = $request->search;
-
-        $users = User::where(function($query) use ($search) {
-            if ($search) {
-                $query->where('email', $search);
-                $query->orwhere('name', 'LIKE', "%{$search}%");
-            }
-
-        })->get();
+        $users = User::getUsers(
+            search: $request->search ?? null
+        );
 
         return view('users.index', compact('users'));
     }
